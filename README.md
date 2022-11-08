@@ -1,5 +1,11 @@
 # PpiImdb
 
+1. Visit https://imdb-api.com/
+2. Create an account
+3. Take an api_key
+4. Write it to api_key file in src/environments/environment.ts
+5. Then write command "npm run start"
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.5.
 
 ## Development server

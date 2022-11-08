@@ -1,0 +1,9 @@
+<div [formGroup]="form" class="movie-form">
+  <mat-form-field class="movie-full-width">
+    <input matInput [formControlName]="MovieFilterFields.title" placeholder="Title">
+  </mat-form-field>
+  <mat-form-field  class="movie-full-width">
+    <input matInput [formControlName]="MovieFilterFields.year" placeholder="Year">
+  </mat-form-field>
+  <button mat-stroked-button color="primary" (click)="searchMovie(form)">Искать</button>
+</div>

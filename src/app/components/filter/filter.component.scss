@@ -1,0 +1,14 @@
+.movie-form {
+  min-width: 350px;
+  max-width: 500px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+
+.movie-full-width {
+  min-height: 100px;
+  width: 40%;
+  padding: 10px;
+}
