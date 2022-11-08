@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, takeUntil, tap } from "rxjs";
+import { combineLatest, Subject, takeUntil, tap } from "rxjs";
 import { DataService } from "../../services/data-service.service";
 import { MovieData } from "../../model/moviedata";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: 'app-result',
@@ -11,22 +12,26 @@ import { MovieData } from "../../model/moviedata";
 export class ResultComponent implements OnInit {
 
   private readonly destroy$ = new Subject<void>();
+
+  title: string = '';
+  year: string = '';
   movieListOriginal:MovieData[] = [];
   movieListFiltered:MovieData[] = [];
   displayedColumns: string[] = ['id', 'title', 'year', 'imDbRating']
 
-  constructor( public dataService: DataService) {}
+  constructor( public dataService: DataService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.dataService.getSpecificDataFromMovies()
-      .pipe(
-        tap(movies => {
+    combineLatest([this.dataService.getSpecificDataFromMovies(), this.route.queryParams]).pipe(
+      tap(([movies, params]) => {
           this.movieListOriginal = movies;
           this.movieListFiltered = this.movieListOriginal;
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe();
+          this.title = params['title'] ?? '';
+          this.year = params['year'] ?? '';
+          this.onFilterChanged(this.title, this.year)
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe()
   }
 
   ngOnDestroy() {
@@ -34,16 +39,16 @@ export class ResultComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  onFilterChanged(filterValue: any) {
-    if (filterValue.title !== '') {
+  onFilterChanged(title: string, year: string): void {
+    if (title !== '') {
       this.movieListFiltered = this.movieListOriginal.filter(
-        movie => movie.title.toLowerCase().includes(filterValue.title.toLowerCase()))
+        movie => movie.title.toLowerCase().includes(title))
     } else {
       this.movieListFiltered = this.movieListOriginal
     };
-    if (filterValue.year !== '') {
+    if (year !== '') {
       this.movieListFiltered = this.movieListFiltered.filter(
-        movie =>  movie.year.toLowerCase().includes(filterValue.year.toLowerCase()))
+        movie =>  movie.year.toLowerCase().includes(year))
     };
   }
 }

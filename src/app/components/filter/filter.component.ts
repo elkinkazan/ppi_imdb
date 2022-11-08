@@ -1,8 +1,8 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {MovieFilterFields} from "../../model/movie-filter-fields.enum";
-import {MovieFilterFieldsValue} from "../../model/movie-filter-fields-value";
-import {Subject, takeUntil} from "rxjs";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { MovieFilterFields } from "../../model/movie-filter-fields.enum";
+import { Subject } from "rxjs";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-filter',
@@ -11,22 +11,15 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 })
 export class FilterComponent implements OnInit {
 
-  @Output() filterChanged: EventEmitter<MovieFilterFieldsValue> = new EventEmitter<MovieFilterFieldsValue>();
-
   readonly MovieFilterFields: typeof MovieFilterFields = MovieFilterFields;
-
   private readonly destroy$ = new Subject<void>();
   // @ts-ignore
   form: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
     this.form = this.initForm();
-
-    this.form.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((filterValue: MovieFilterFieldsValue) => this.filterChanged.emit(filterValue));
   }
 
   private initForm(): FormGroup {
@@ -41,8 +34,13 @@ export class FilterComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  searchMovie(searchForm: FormGroup) {
-    this.filterChanged.emit(searchForm.value)
+  searchMovie(searchForm: FormGroup): void {
+    this.router.navigate(['/result'],
+      {queryParams: {
+        title : searchForm.value.title.toLowerCase().trim(),
+        year: searchForm.value.year.toLowerCase().trim()
+      }}
+    );
   }
 
 }
